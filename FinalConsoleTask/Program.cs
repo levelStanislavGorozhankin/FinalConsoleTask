@@ -10,6 +10,7 @@ namespace FinalConsoleTask
     {
         static void Main(string[] args)
         {
+
         }
     }
 }
