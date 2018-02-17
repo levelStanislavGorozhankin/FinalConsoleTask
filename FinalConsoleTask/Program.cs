@@ -10,7 +10,9 @@ namespace FinalConsoleTask
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("FC-1");
             Console.WriteLine("ReleaseV1");
+
         }
     }
 }
