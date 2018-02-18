@@ -51,5 +51,11 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SystemFileReader\SystemFileReader.csproj">
+      <Project>{3c0d0c12-6487-4b7a-a5fd-09f3fca42928}</Project>
+      <Name>SystemFileReader</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
