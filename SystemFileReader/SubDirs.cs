@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SystemFileReader
-{
-    public class Class1
-    {
-    }
-}
+//namespace SystemFileReader
+//{
+//    class SubDirs:Root
+//    {
+//    }
+//}

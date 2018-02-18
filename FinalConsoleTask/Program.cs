@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SystemFileReader;
 
 namespace FinalConsoleTask
 {
@@ -10,9 +11,8 @@ namespace FinalConsoleTask
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("FC-1");
-            Console.WriteLine("ReleaseV1");
-
+            new FileReader().DoSomeThing();
+            
         }
     }
 }
