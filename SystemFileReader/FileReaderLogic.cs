@@ -12,6 +12,7 @@ namespace SystemFileReader
     class FileReaderLogic
     {
         public volatile List<string> FolderList;
+        public volatile List<string> FileList;
         //  public List<string> Log;
         private static object Locker = new object();
         private DirectoryInfo RootDir;
@@ -25,6 +26,7 @@ namespace SystemFileReader
         {
             RootDir = Directory.GetParent(path);
             FolderList = new List<string>();
+            FileList = new List<string>();
             //  Log = new List<string>();
             TreePath = treePath;
             LogPath = logPath;
@@ -69,12 +71,11 @@ namespace SystemFileReader
                     WaitHandler.WaitOne();
                     lock (Locker)
                     {
-                        if (FolderList.Any(x => x.Equals(fi.FullName)))
+                        if (FileList.Any(x => x.Equals(fi.FullName)))
                         {
                             continue;
                         }
-
-                        FolderList.Add(fi.FullName);
+                        FileList.Add(fi.FullName);
                         Console.WriteLine(fi.FullName + " Поток " + Thread.CurrentThread.Name);
                     }
                 }

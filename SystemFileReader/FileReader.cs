@@ -11,7 +11,7 @@ namespace SystemFileReader
 {
     public class FileReader
     {
-        private string ViewPath = @"d:\mtp\";
+        private string ViewPath = @"d:\tmp1\";
         private string TreePath = @"D:\tmp\folderTree.txt";
         private string LogPath = @"D:\tmp\log.txt";
         private ConsoleKeyInfo _key;
@@ -92,6 +92,8 @@ namespace SystemFileReader
 
             Console.WriteLine("--------------------------");
             File.WriteAllLines(TreePath, root.FolderList);
+            File.AppendAllLines(TreePath, root.FileList);
+
             Console.WriteLine("Done");
         }
     }
