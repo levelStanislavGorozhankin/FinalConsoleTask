@@ -71,11 +71,11 @@ namespace SystemFileReader
                     WaitHandler.WaitOne();
                     lock (Locker)
                     {
-                        if (FileList.Any(x => x.Equals(fi.FullName)))
+                        if (FileList.Any(x => x.Contains(fi.FullName)))
                         {
                             continue;
                         }
-                        FileList.Add(fi.FullName);
+                        FileList.Add(fi.FullName + " Поток " + Thread.CurrentThread.Name);
                         Console.WriteLine(fi.FullName + " Поток " + Thread.CurrentThread.Name);
                     }
                 }
@@ -84,9 +84,9 @@ namespace SystemFileReader
                 {
                     lock (Locker)
                     {
-                        if (!FolderList.Any(x => x.Equals(dirInfo.FullName)))
+                        if (!FolderList.Any(x => x.Contains(dirInfo.FullName)))
                         {
-                            FolderList.Add(dirInfo.FullName);
+                            FolderList.Add(dirInfo.FullName + " Поток " + Thread.CurrentThread.Name);
                             Console.WriteLine(dirInfo.FullName + " Поток " + Thread.CurrentThread.Name);
                         }
                     }
