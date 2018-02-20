@@ -9,37 +9,39 @@ using System.Threading.Tasks;
 
 namespace SystemFileReader
 {
-    public class FileReaderLogic
+    class FileReaderLogic
     {
-        private List<string> FolderList;
-        public List<string> Log;
-        private static object locker = new object();
-        private DirectoryInfo rootDir;
-        private FileInfo[] files;
-        private DirectoryInfo[] subDirs;
+        public volatile List<string> FolderList;
+        //  public List<string> Log;
+        private static object Locker = new object();
+        private DirectoryInfo RootDir;
+        private FileInfo[] Files;
+        private DirectoryInfo[] SubDirs;
         private string TreePath;
         private string LogPath;
+        public EventWaitHandle WaitHandler = new ManualResetEvent(true);
 
         public FileReaderLogic(string path, string treePath, string logPath)
         {
-            rootDir = Directory.GetParent(path);
+            RootDir = Directory.GetParent(path);
             FolderList = new List<string>();
-            Log = new List<string>();
+            //  Log = new List<string>();
             TreePath = treePath;
             LogPath = logPath;
         }
 
         public void Start()
         {
-            WalkDirectoryTree(rootDir);
+            WalkDirectoryTree(RootDir);
         }
 
-        public void WalkDirectoryTree(DirectoryInfo root)
+        private void WalkDirectoryTree(DirectoryInfo root)
         {
+
             try
             {
-                files = root.GetFiles("*.*");
-                subDirs = root.GetDirectories();
+                Files = root.GetFiles("*.*");
+                SubDirs = root.GetDirectories();
             }
             catch (UnauthorizedAccessException e)
             {
@@ -59,41 +61,35 @@ namespace SystemFileReader
                 }
             }
 
-            if (files != null)
+            if (Files != null)
             {
 
-                foreach (FileInfo fi in files)
+                foreach (FileInfo fi in Files)
                 {
-                    lock (locker)
+                    WaitHandler.WaitOne();
+                    lock (Locker)
                     {
                         if (FolderList.Any(x => x.Equals(fi.FullName)))
-                            continue;
-
-                        using (StreamWriter sw = File.AppendText(TreePath))
                         {
-                            sw.WriteLine(fi.FullName + " Поток " + Thread.CurrentThread.Name); //Thread.CurrentThread.Name);
+                            continue;
                         }
 
                         FolderList.Add(fi.FullName);
-                        Console.WriteLine(fi.FullName + " Поток " + Thread.CurrentThread.Name);//Thread.CurrentThread.Name);
+                        Console.WriteLine(fi.FullName + " Поток " + Thread.CurrentThread.Name);
                     }
                 }
 
-                foreach (DirectoryInfo dirInfo in subDirs)
+                foreach (DirectoryInfo dirInfo in SubDirs)
                 {
-                    lock (locker)
+                    lock (Locker)
                     {
-                        if (FolderList.Any(x => x.Equals(dirInfo.FullName)))
-                            continue;
-
-                        using (StreamWriter sw = File.AppendText(TreePath))
+                        if (!FolderList.Any(x => x.Equals(dirInfo.FullName)))
                         {
-                            sw.WriteLine(dirInfo.FullName + " Поток " + Thread.CurrentThread.Name); //Thread.CurrentThread.Name);
+                            FolderList.Add(dirInfo.FullName);
+                            Console.WriteLine(dirInfo.FullName + " Поток " + Thread.CurrentThread.Name);
                         }
-
-                        FolderList.Add(dirInfo.FullName);
-                        Console.WriteLine(dirInfo.FullName + " Поток " + Thread.CurrentThread.Name);//Thread.CurrentThread.Name);
                     }
+                    WaitHandler.WaitOne();
                     WalkDirectoryTree(dirInfo);
                 }
             }
