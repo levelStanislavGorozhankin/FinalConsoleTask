@@ -11,15 +11,22 @@ namespace SystemFileReader
 {
     public class FileReader
     {
-        string ViewPath = @"d:\photo\";
-        string TreePath = @"D:\tmp\folderTree.txt";
-        string LogPath = @"D:\tmp\log.txt";
-        ConsoleKeyInfo _key;
+        private string ViewPath = @"d:\mtp\";
+        private string TreePath = @"D:\tmp\folderTree.txt";
+        private string LogPath = @"D:\tmp\log.txt";
+        private ConsoleKeyInfo _key;
 
-        public void DoSomeThing()
+        public void Start()
         {
+            if (!Directory.GetParent(TreePath).Exists)
+            {
+                Directory.CreateDirectory(Directory.GetParent(TreePath).ToString());
+            }
+
             if (File.Exists(TreePath))
+            {
                 File.Delete(TreePath);
+            }
 
             FileReaderLogic root = new FileReaderLogic(ViewPath, TreePath, LogPath);
 
@@ -32,40 +39,60 @@ namespace SystemFileReader
                 ThreadArray[i].Name = (i + 1).ToString();
             }
 
-            while (ThreadArray.Any(x => x.IsAlive))
+            bool stop = false;
+            while (true)
             {
-                _key = Console.ReadKey();
-
-                if (_key.Key == ConsoleKey.Spacebar)
+                if (stop)
                 {
-                    if (!ThreadArray.Any(x => x.IsAlive))
-                        break;
+                    break;
+                } 
+                _key = Console.ReadKey(true);
 
-                    if (ThreadArray[0].ThreadState == ThreadState.Running || ThreadArray[1].ThreadState == ThreadState.Running || ThreadArray[2].ThreadState == ThreadState.Running )
-                    {
-                        foreach (Thread thr in ThreadArray)
+                if (!ThreadArray[0].IsAlive && !ThreadArray[0].IsAlive && !ThreadArray[0].IsAlive) //if(!ThreadArray.All(x => x.IsAlive))
+                {
+                    Console.WriteLine("All thread are stopped");
+                }   
+
+                switch (_key.Key)
+                {
+
+                    case ConsoleKey.Spacebar:
                         {
-                            if (thr.IsAlive)
+                            if (ThreadArray.Any(x => x.ThreadState == ThreadState.Running))
                             {
-                                thr.Suspend();
-                                Console.WriteLine("Thread {0} suspended", thr.Name);
+                                root.WaitHandler.Reset();
                             }
-                            Console.WriteLine(thr.Name + " "+ thr.ThreadState + " " + thr.IsAlive);
+                            else
+                            {
+                                root.WaitHandler.Set();
+                            }
+                            break;
                         }
-                    }
-                    else
-                    {
-                        foreach (Thread thr in ThreadArray)
+
+                    case ConsoleKey.F1:
                         {
-                            if (thr.IsAlive)
+                            foreach (Thread thr in ThreadArray)
                             {
-                                thr.Resume();
+                                Console.WriteLine(thr.Name + " " + thr.ThreadState + " " + thr.IsAlive);
                             }
+                            break;
                         }
-                    }
+
+                    case ConsoleKey.Escape:
+                        {
+                            foreach (Thread thr in ThreadArray)
+                            {
+                                thr.Abort();
+                            }
+                            stop = true;
+                            break;
+                        }
                 }
             }
+
             Console.WriteLine("--------------------------");
+            File.WriteAllLines(TreePath, root.FolderList);
+            Console.WriteLine("Done");
         }
     }
 }

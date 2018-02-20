@@ -11,8 +11,7 @@ namespace FinalConsoleTask
     {
         static void Main(string[] args)
         {
-            new FileReader().DoSomeThing();
-            
+            new FileReader().Start();
         }
     }
 }
